@@ -1,8 +1,6 @@
 package com.example.lab8_20176054.Entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -17,12 +15,17 @@ import java.util.Date;
 public class evento {
 
 
+
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
     private Date fecha;
     private String nombre;
     private String descripcion;
     private String path_image;
+
+
+    @Column(name = "idlocal")
     private int idLocal;
 
     public int getId() {

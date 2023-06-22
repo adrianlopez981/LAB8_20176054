@@ -1,51 +1,107 @@
 package com.example.lab8_20176054.Controller;
 
 
-import com.example.lab8_20176054.dao.DaoEvento;
+import com.example.lab8_20176054.Entity.evento;
+import com.example.lab8_20176054.Repository.EventoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.validation.BindingResult;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-@Controller
+import java.util.HashMap;
+import java.util.List;
+import java.util.Optional;
+
+@RestController //me añade el @ResponseBody
+@CrossOrigin // para evitar bloqueos
 @RequestMapping(value = "/evento")
 public class ControllerBase {
 
 //    @Autowired
 //    DaoEmpresa daoEmpresa;
 
+
     @Autowired
-    DaoEvento daoEvento;
+    EventoRepository eventoRepository;
 //
 //    @Autowired
 //    SupplierDao supplierDao;
 
 
+    @GetMapping({""})
+    public List<evento> listarEventos() {
 
-    @GetMapping({"/list","","/"})
-    public String listarEventos(Model model) {
-        model.addAttribute("listaEventos", daoEvento.listarEventos());
-        return "evento/list";
+        return eventoRepository.findAll();
     }
-//
+
+
     @GetMapping("/{id}")
-    public String buscarxId(@RequestParam("id") int id, Model model) {
+    public ResponseEntity<HashMap<String, Object>> buscarxId(@RequestParam(value = "id", required = false) int idParam) {
+
+        HashMap<String, Object> responseMap = new HashMap<>();
+
+//        if (idParam == null || idParam.isEmpty()) {
+//            responseMap.put("estado", "error");
+//            responseMap.put("msg", "Debe enviar el parámetro 'idSolicitud'");
+//            return ResponseEntity.badRequest().body(responseMap);
+//        }
+
+        try {
+            int id = Integer.parseInt(idParam);
+
+            System.out.println(id);
+            System.out.println(idParam);
+
+            if (id > 0) {
+                Optional<evento> opt = eventoRepository.findById(id);
+                if (opt.isPresent()) {
+                    evento evento = opt.get();
+//                    if ("pendiente".equals(evento.getSolicitud_estado())) {
+//                        solicitudes.setSolicitud_estado("aprobado");
+//                        solicitudesRepository.save(solicitudes);
+//                        responseMap.put("id solicitud", id);
+                    return ResponseEntity.ok(responseMap);
+                }else {
+                        responseMap.put("estado", "error");
+                        responseMap.put("msg", "Debe enviar un ID válido");
+                        return ResponseEntity.badRequest().body(responseMap);
+                    }
 
 
+                }
 
-        model.addAttribute("evento", daoEvento.buscarPorId());
-
-        return "product/vistaEvento";
+        } catch (NumberFormatException e) {
+            responseMap.put("estado", "error");
+            responseMap.put("msg", "El ID de solicitud debe ser un número válido");
+            return ResponseEntity.badRequest().body(responseMap);
+        }
+        return ResponseEntity.ok(responseMap);
     }
 
-    @GetMapping("/new")
-    public String nuevoProductoFrm(@ModelAttribute("product") Product product, Model model) {
-        model.addAttribute("listaCategorias", categoryDao.listarCategorias());
-        model.addAttribute("listaProveedores", supplierDao.listarProveedores());
-        return "product/form";
-    }
+
+//
+//    @ResponseBody
+//    @GetMapping( "/product")
+//    public List<Product> listarProductos(){
+//        return productRepository.findAll();
+//    }
+////
+//    @GetMapping("/{id}")
+//    public String buscarxId(@RequestParam("id") int id, Model model) {
+//
+//
+//
+//        model.addAttribute("evento", daoEvento.buscarPorId(id));
+//
+//        return "product/vistaEvento";
+//    }
+
+
+//    @GetMapping("/new")
+//    public String nuevoProductoFrm(@ModelAttribute("product") Product product, Model model) {
+//        model.addAttribute("listaCategorias", categoryDao.listarCategorias());
+//        model.addAttribute("listaProveedores", supplierDao.listarProveedores());
+//        return "product/form";
+//    }
 //
 //    @PostMapping("/save")
 //    public String guardarProducto(@ModelAttribute("product") @Valid Product product, BindingResult bindingResult,

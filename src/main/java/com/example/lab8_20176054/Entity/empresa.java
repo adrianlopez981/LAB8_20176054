@@ -1,6 +1,13 @@
 package com.example.lab8_20176054.Entity;
 
+
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+
+@Entity
 public class empresa {
+
+    @Id
     private int id;
     private String nombre;
     private String ruc;
