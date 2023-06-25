@@ -4,6 +4,7 @@ package com.example.lab8_20176054.Controller;
 import com.example.lab8_20176054.Entity.evento;
 import com.example.lab8_20176054.Repository.EventoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -35,65 +36,60 @@ public class ControllerBase {
 
 
     @GetMapping("/{id}")
-    public ResponseEntity<HashMap<String, Object>> buscarxId(@RequestParam(value = "id", required = false) int idParam) {
+    public ResponseEntity<HashMap<String, Object>> buscarxId(@PathVariable(value = "id", required = false) String idParam) {
 
         HashMap<String, Object> responseMap = new HashMap<>();
 
-//        if (idParam == null || idParam.isEmpty()) {
-//            responseMap.put("estado", "error");
-//            responseMap.put("msg", "Debe enviar el parámetro 'idSolicitud'");
-//            return ResponseEntity.badRequest().body(responseMap);
-//        }
-
         try {
             int id = Integer.parseInt(idParam);
-
-            System.out.println(id);
-            System.out.println(idParam);
-
             if (id > 0) {
                 Optional<evento> opt = eventoRepository.findById(id);
                 if (opt.isPresent()) {
                     evento evento = opt.get();
-//                    if ("pendiente".equals(evento.getSolicitud_estado())) {
-//                        solicitudes.setSolicitud_estado("aprobado");
-//                        solicitudesRepository.save(solicitudes);
-//                        responseMap.put("id solicitud", id);
+                    responseMap.put("evento", evento);
+                    responseMap.put("resultado", "exitoso");
+
                     return ResponseEntity.ok(responseMap);
                 }else {
-                        responseMap.put("estado", "error");
-                        responseMap.put("msg", "Debe enviar un ID válido");
-                        return ResponseEntity.badRequest().body(responseMap);
-                    }
+
+                    responseMap.put("msg", "Evento no encontrado");
+                    responseMap.put("resultado", "Falla");
+                    return ResponseEntity.badRequest().body(responseMap);
+                }
 
 
                 }
 
         } catch (NumberFormatException e) {
-            responseMap.put("estado", "error");
-            responseMap.put("msg", "El ID de solicitud debe ser un número válido");
+            responseMap.put("msg", "el ID debe ser un número entero positivo");
+            responseMap.put("resultado", "Falla");
             return ResponseEntity.badRequest().body(responseMap);
         }
         return ResponseEntity.ok(responseMap);
     }
 
 
-//
-//    @ResponseBody
-//    @GetMapping( "/product")
-//    public List<Product> listarProductos(){
-//        return productRepository.findAll();
-//    }
-////
-//    @GetMapping("/{id}")
-//    public String buscarxId(@RequestParam("id") int id, Model model) {
-//
-//
-//
-//        model.addAttribute("evento", daoEvento.buscarPorId(id));
-//
-//        return "product/vistaEvento";
-//    }
+    @PostMapping("")
+    public ResponseEntity<HashMap<String, Object>> guardarEvento(
+            @RequestBody evento evento,
+            @RequestParam(value = "fetchId", required = false) boolean fetchId) {
+
+        HashMap<String, Object> responseMap = new HashMap<>();
+
+
+        eventoRepository.save(evento);
+
+        if(fetchId){
+            responseMap.put("id",evento.getId());
+        }
+
+
+        responseMap.put("estado", "creado");
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(responseMap);
+    }
+
+
 
 
 //    @GetMapping("/new")

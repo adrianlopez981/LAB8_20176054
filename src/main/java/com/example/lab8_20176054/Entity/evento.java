@@ -1,5 +1,6 @@
 package com.example.lab8_20176054.Entity;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -8,6 +9,8 @@ import java.time.LocalDateTime;
 import java.util.Date;
 
 
+
+@JsonSerialize
 @Getter
 @Setter
 @Entity
@@ -19,14 +22,17 @@ public class evento {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
+
+
     private Date fecha;
     private String nombre;
     private String descripcion;
     private String path_image;
 
 
-    @Column(name = "idlocal")
-    private int idLocal;
+    @ManyToOne
+    @JoinColumn(name = "idlocal")
+    private local local;
 
     public int getId() {
         return id;
@@ -68,11 +74,5 @@ public class evento {
         this.path_image = path_image;
     }
 
-    public int getIdLocal() {
-        return idLocal;
-    }
 
-    public void setIdLocal(int idLocal) {
-        this.idLocal = idLocal;
-    }
 }
