@@ -23,16 +23,22 @@ public class evento {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
+    private String nombre;
+
+    private String descripcion;
+
 
     private Date fecha;
-    private String nombre;
-    private String descripcion;
-    private String path_image;
-
 
     @ManyToOne
     @JoinColumn(name = "idlocal")
     private local local;
+
+
+    private String path_image;
+
+
+
 
     public int getId() {
         return id;
