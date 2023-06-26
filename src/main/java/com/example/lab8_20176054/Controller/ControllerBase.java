@@ -5,6 +5,8 @@ import com.example.lab8_20176054.Entity.evento;
 import com.example.lab8_20176054.Entity.tipoticket;
 import com.example.lab8_20176054.Repository.EventoRepository;
 import com.example.lab8_20176054.Repository.TipoTicketRepository;
+import com.example.lab8_20176054.Repository.UsuarioRepository;
+import com.example.lab8_20176054.dto.cantTicketxUser;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -30,6 +32,10 @@ public class ControllerBase {
 
     @Autowired
     TipoTicketRepository tipoTicketRepository;
+
+
+    @Autowired
+    UsuarioRepository usuarioRepository;
 //
 //    @Autowired
 //    SupplierDao supplierDao;
@@ -184,6 +190,71 @@ public class ControllerBase {
         responseMap.put("estado","error");
         return ResponseEntity.badRequest().body(responseMap);
     }
+
+
+
+
+    @DeleteMapping(value = "/evento/{id}")
+    public ResponseEntity<HashMap<String, Object>> borrarEvento(@PathVariable("id") String idStr) {
+        HashMap<String, Object> responseMap = new HashMap<>();
+
+        try {
+            int id = Integer.parseInt(idStr);
+
+            if(eventoRepository.existsById(id)){
+                eventoRepository.deleteById(id);
+                responseMap.put("estado","borrado exitoso");
+                return ResponseEntity.ok(responseMap);
+            }else{
+                responseMap.put("estado","error");
+                responseMap.put("msg","no se encontró el producto con id: " + id);
+                return ResponseEntity.badRequest().body(responseMap);
+            }
+
+        } catch (NumberFormatException ex) {
+
+            responseMap.put("estado", "error");
+
+            responseMap.put("msg", "El ID de solicitud debe ser un número válido");
+
+            return ResponseEntity.badRequest().body(responseMap);
+        }
+    }
+
+
+
+    @GetMapping("/cantidadTicketsUsuario")
+    public List<cantTicketxUser> cantidadTicketsUsuario() {
+
+
+
+        return usuarioRepository.listaCantidadTicketsxUsuario();
+    }
+
+
+    @GetMapping("/cantidadTicketsEmpresas")
+    public List<cantTicketxUser> cantidadTicketsEmpresas() {
+
+
+
+        return usuarioRepository.listaCantidadTicketsxUsuario();
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
